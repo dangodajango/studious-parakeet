@@ -8,7 +8,7 @@ import org.apache.hadoop.mapreduce.lib.output.MultipleOutputs;
 
 import java.io.IOException;
 
-public class GenericMapper extends Mapper<Object, Text, Text, Text> {
+public class DataMapper extends Mapper<Object, Text, Text, Text> {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -40,5 +40,6 @@ public class GenericMapper extends Mapper<Object, Text, Text, Text> {
         if (context.getConfiguration().get("aggregators") != null) {
             context.write(new Text(context.getJobName()), value);
         }
+        multipleOutputs.write(context.getJobName(), null, value);
     }
 }
