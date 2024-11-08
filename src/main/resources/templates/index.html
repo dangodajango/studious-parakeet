@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Table</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Survey Data Table</h2>
+
+<table>
+    <thead>
+    <tr>
+        <th>Year</th>
+        <th>Age Group</th>
+        <th>Gender</th>
+        <th>Smoking Prevalence</th>
+        <th>Drug Experimentation</th>
+        <th>Socioeconomic Status</th>
+        <th>Peer Influence</th>
+        <th>School Programs</th>
+        <th>Family Background</th>
+        <th>Mental Health</th>
+        <th>Access to Counseling</th>
+        <th>Parental Supervision</th>
+        <th>Substance Education</th>
+        <th>Community Support</th>
+        <th>Media Influence</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="entry : ${filteredEntries}">
+        <td th:text="${entry.year}"></td>
+        <td th:text="${entry.ageGroup}"></td>
+        <td th:text="${entry.gender}"></td>
+        <td th:text="${entry.smokingPrevalence} + '%'"></td>
+        <td th:text="${entry.drugExperimentation} + '%'"></td>
+        <td th:text="${entry.socioeconomicStatus}"></td>
+        <td th:text="${entry.peerInfluence}"></td>
+        <td th:text="${entry.schoolPrograms}"></td>
+        <td th:text="${entry.familyBackground}"></td>
+        <td th:text="${entry.mentalHealth}"></td>
+        <td th:text="${entry.accessToCounseling}"></td>
+        <td th:text="${entry.parentalSupervision}"></td>
+        <td th:text="${entry.substanceEducation}"></td>
+        <td th:text="${entry.communitySupport}"></td>
+        <td th:text="${entry.mediaInfluence}"></td>
+    </tr>
+    </tbody>
+</table>
+
+</body>
+</html>

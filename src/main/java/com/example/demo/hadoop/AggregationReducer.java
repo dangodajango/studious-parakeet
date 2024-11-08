@@ -15,7 +15,7 @@ import static com.example.demo.hadoop.model.Aggregator.AVERAGE_SMOKING_PREVALENC
 import static com.example.demo.hadoop.model.Aggregator.PERCENTAGE_ACCESS_TO_COUNSELING;
 
 @Slf4j
-public class DataReducer extends Reducer<Text, Text, Text, DoubleWritable> {
+public class AggregationReducer extends Reducer<Text, Text, Text, DoubleWritable> {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 

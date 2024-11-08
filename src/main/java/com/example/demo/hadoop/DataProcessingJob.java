@@ -2,7 +2,6 @@ package com.example.demo.hadoop;
 
 import com.example.demo.hadoop.model.Aggregator;
 import com.example.demo.hadoop.model.Filter;
-import com.example.demo.hadoop.model.FilterConfiguration;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
@@ -14,25 +13,17 @@ import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.mapreduce.lib.output.MultipleOutputs;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.UUID;
 
-import static com.example.demo.hadoop.model.Aggregator.AVERAGE_SMOKING_PREVALENCE;
-import static com.example.demo.hadoop.model.Aggregator.PERCENTAGE_ACCESS_TO_COUNSELING;
-
-public class DataJob {
+@Component
+public class DataProcessingJob {
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
-    public static void main(String[] args) throws IOException, InterruptedException, ClassNotFoundException {
-        Filter filter = new Filter(FilterConfiguration.AGE_GROUP, "\"10-14\"");
-        Filter filter2 = new Filter(FilterConfiguration.GENDER, "\"Both\"");
-        executeJob(new Filter[]{filter}, new Aggregator[]{AVERAGE_SMOKING_PREVALENCE, PERCENTAGE_ACCESS_TO_COUNSELING},
-                new Path("/input"), new Path("/output"));
-    }
-
-    public static String executeJob(final Filter[] filters, final Aggregator[] aggregators, final Path inputDirectory, final Path outputDirectory)
+    public String executeJob(final Filter[] filters, final Aggregator[] aggregators, final Path inputDirectory, final Path outputDirectory)
             throws IOException, InterruptedException, ClassNotFoundException {
         final Configuration conf = new Configuration();
         conf.set("fs.defaultFS", "hdfs://localhost:9000");
@@ -45,11 +36,11 @@ public class DataJob {
         final Path outputDirectoryForCurrentJob = new Path(outputDirectory, jobId);
         FileOutputFormat.setOutputPath(job, outputDirectoryForCurrentJob);
 
-        job.setMapperClass(DataMapper.class);
+        job.setMapperClass(FilteringMapper.class);
         job.setMapOutputKeyClass(Text.class);
         job.setMapOutputValueClass(Text.class);
 
-        job.setReducerClass(DataReducer.class);
+        job.setReducerClass(AggregationReducer.class);
         job.setOutputKeyClass(Text.class);
         job.setOutputValueClass(DoubleWritable.class);
 
@@ -61,7 +52,7 @@ public class DataJob {
         return jobId;
     }
 
-    private static void renameGeneratedFiles(Path outputDirectory, Job job, Configuration configuration) throws IOException {
+    private void renameGeneratedFiles(Path outputDirectory, Job job, Configuration configuration) throws IOException {
         final FileSystem fileSystem = FileSystem.get(configuration);
 
         final Path filteredResults = new Path(outputDirectory, String.format("%s-m-00000.txt", job.getJobName()));
