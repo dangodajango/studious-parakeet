@@ -18,11 +18,51 @@
         th {
             background-color: #f2f2f2;
         }
+
+        /* Style for pagination buttons */
+        .pagination {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .pagination a {
+            display: inline-block;
+            padding: 10px 20px;
+            margin: 0 5px;
+            color: #333;
+            background-color: #f2f2f2;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            text-decoration: none;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .pagination a:hover {
+            background-color: #ddd;
+            color: #000;
+        }
+        .pagination a:disabled, .pagination a[th:if=false] {
+            background-color: #e0e0e0;
+            color: #999;
+            pointer-events: none;
+        }
+        .small-table {
+            width: 50%;
+            margin-top: 30px;
+            margin-left: auto;
+            margin-right: auto;
+            border: 1px solid #ddd;
+            border-collapse: collapse;
+        }
+        .small-table th, .small-table td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+        .small-table th {
+            background-color: #eaeaea;
+        }
     </style>
 </head>
 <body>
-
-<h2>Survey Data Table</h2>
 
 <table>
     <thead>
@@ -61,6 +101,28 @@
         <td th:text="${entry.substanceEducation}"></td>
         <td th:text="${entry.communitySupport}"></td>
         <td th:text="${entry.mediaInfluence}"></td>
+    </tr>
+    </tbody>
+</table>
+
+<div class="pagination">
+    <a th:if="${lineNumber - pageSize > 0}"
+       th:href="@{|/?lineNumber=${lineNumber - pageSize}}">Previous</a>
+
+    <a th:href="@{|/?lineNumber=${lineNumber + pageSize}|}">Next</a>
+</div>
+
+<table class="small-table" th:if="${!aggregatedEntries.empty}">
+    <thead>
+    <tr>
+        <th>Aggregation</th>
+        <th>Result</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="aggregatedEntry : ${aggregatedEntries}">
+        <td th:text="${aggregatedEntry.aggregation}"></td>
+        <td th:text="${aggregatedEntry.result}"></td>
     </tr>
     </tbody>
 </table>

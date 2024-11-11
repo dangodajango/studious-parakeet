@@ -47,7 +47,7 @@ public class AggregationReducer extends Reducer<Text, Text, Text, DoubleWritable
         }
         assert iterableSize != 0 : "Iterable size was 0";
         final double averageSmokingPrevalence = smokingPrevalence / iterableSize;
-        context.write(new Text("average-smoking-prevalence"), new DoubleWritable(averageSmokingPrevalence));
+        context.write(new Text("Average smoking prevalence"), new DoubleWritable(averageSmokingPrevalence));
     }
 
     private void calculatePercentageAccessToCounseling(final List<String[]> rows, final Context context) throws IOException, InterruptedException {
@@ -62,6 +62,6 @@ public class AggregationReducer extends Reducer<Text, Text, Text, DoubleWritable
         }
         assert iterableSize != 0 : "Iterable size was 0";
         final double percentageAccessToCounseling = (accessToCounseling * 100.0) / iterableSize;
-        context.write(new Text("percentage-access-to-counseling"), new DoubleWritable(percentageAccessToCounseling));
+        context.write(new Text("Percentage access to counseling"), new DoubleWritable(percentageAccessToCounseling));
     }
 }

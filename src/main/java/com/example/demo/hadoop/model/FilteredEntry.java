@@ -27,8 +27,6 @@ public class FilteredEntry {
     private int mediaInfluence;
 
     public static FilteredEntry mapToFilteredEntry(String filteredEntryString) {
-        System.out.println(filteredEntryString);
-        System.out.println(filteredEntryString.replace("\"", ""));
         String[] entryColumns = filteredEntryString.replace("\"", "").split(",");
         return new FilteredEntryBuilder()
                 .year(Integer.parseInt(entryColumns[0]))
