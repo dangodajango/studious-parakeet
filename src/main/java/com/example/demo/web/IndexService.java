@@ -1,11 +1,10 @@
 package com.example.demo.web;
 
-import com.example.demo.hadoop.DataProcessingJob;
+import com.example.demo.hadoop.BaseJob;
 import com.example.demo.hadoop.ProcessedDataReader;
 import com.example.demo.hadoop.model.AggregatedEntry;
-import com.example.demo.hadoop.model.Aggregator;
-import com.example.demo.hadoop.model.Filter;
 import com.example.demo.hadoop.model.FilteredEntry;
+import com.example.demo.hadoop.filter.FilterDTO;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.hadoop.fs.Path;
@@ -19,7 +18,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class IndexService {
 
-    private final DataProcessingJob dataProcessingJob;
+    private final BaseJob dataProcessingJob;
 
     private final ProcessedDataReader processedDataReader;
 
@@ -33,9 +32,8 @@ public class IndexService {
     @Getter
     private int pageSize;
 
-    public Response processRequest(Filter[] filters, Aggregator[] aggregators, int lineNumber) throws IOException, InterruptedException, ClassNotFoundException {
-        String jobId = dataProcessingJob.executeJob(filters, aggregators,
-                new Path(inputDirectoryPath), new Path(outputDirectoryPath));
+    public Response processRequest(List<FilterDTO> filterDTOs, int lineNumber) throws IOException, InterruptedException, ClassNotFoundException {
+        String jobId = dataProcessingJob.executeJob(filterDTOs, new Path(inputDirectoryPath), new Path(outputDirectoryPath));
         List<FilteredEntry> filteredEntries = processedDataReader.readFilteredResults(jobId, lineNumber, lineNumber + 30);
         List<AggregatedEntry> aggregatedEntries = processedDataReader.readAggregatedResults(jobId);
         return new Response(filteredEntries, aggregatedEntries);

@@ -1,8 +1,9 @@
 package com.example.demo.web;
 
-import com.example.demo.hadoop.model.Aggregator;
-import com.example.demo.hadoop.model.Filter;
-import com.example.demo.hadoop.model.FilterConfiguration;
+import com.example.demo.hadoop.filter.AgeGroupFilter;
+import com.example.demo.hadoop.filter.FilterDTO;
+import com.example.demo.hadoop.filter.GenderFilter;
+import com.example.demo.hadoop.filter.PeerInfluenceFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -10,9 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.io.IOException;
-
-import static com.example.demo.hadoop.model.Aggregator.AVERAGE_SMOKING_PREVALENCE;
-import static com.example.demo.hadoop.model.Aggregator.PERCENTAGE_ACCESS_TO_COUNSELING;
+import java.util.Arrays;
 
 @Controller
 @RequiredArgsConstructor
@@ -23,10 +22,11 @@ public class IndexController {
     @GetMapping("/")
     public String index(@RequestParam(defaultValue = "1") int lineNumber, Model model)
             throws IOException, InterruptedException, ClassNotFoundException {
-        Filter[] selectedFilters = new Filter[]{new Filter(FilterConfiguration.GENDER, "\"Both\"")};
-        Aggregator[] selectedAggregators = new Aggregator[]{AVERAGE_SMOKING_PREVALENCE, PERCENTAGE_ACCESS_TO_COUNSELING};
+        FilterDTO genderFilterDTO = new FilterDTO(GenderFilter.FILTER_NAME, Arrays.asList("Both", "Male"));
+        FilterDTO peerInfluenceDTO = new FilterDTO(PeerInfluenceFilter.FILTER_NAME, Arrays.asList("1", "2", "3", "4", "5"));
+        FilterDTO ageGroupDTO = new FilterDTO(AgeGroupFilter.FILTER_NAME, Arrays.asList("1", "50"));
 
-        Response response = indexService.processRequest(selectedFilters, selectedAggregators, lineNumber);
+        Response response = indexService.processRequest(Arrays.asList(genderFilterDTO, peerInfluenceDTO, ageGroupDTO), lineNumber);
 
         model.addAttribute("filteredEntries", response.getFilteredEntries());
         model.addAttribute("aggregatedEntries", response.getAggregatedEntries());
