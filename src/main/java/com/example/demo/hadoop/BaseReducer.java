@@ -42,27 +42,27 @@ public class BaseReducer extends Reducer<Text, Text, Text, DoubleWritable> {
     private void calculateAverageSmokingPrevalence(Text key, List<String[]> rows) throws IOException, InterruptedException {
         double smokingPrevalence = 0;
         long iterableSize = 0;
-        for (final String[] row : rows) {
+        for (String[] row : rows) {
             smokingPrevalence += Double.parseDouble(row[AVERAGE_SMOKING_PREVALENCE.getPosition()].replace("\"", ""));
             iterableSize++;
         }
         assert iterableSize != 0 : "Iterable size was 0";
-        final double averageSmokingPrevalence = smokingPrevalence / iterableSize;
+        double averageSmokingPrevalence = smokingPrevalence / iterableSize;
         multipleOutputs.write("averageSmokingPrevalence", key, new DoubleWritable(averageSmokingPrevalence));
     }
 
     private void calculatePercentageAccessToCounseling(Text key, List<String[]> rows) throws IOException, InterruptedException {
         long accessToCounseling = 0;
         long iterableSize = 0;
-        for (final String[] row : rows) {
-            final boolean hasAccessToCounseling = row[PERCENTAGE_ACCESS_TO_COUNSELING.getPosition()].replace("\"", "").equals("Yes");
+        for (String[] row : rows) {
+            boolean hasAccessToCounseling = row[PERCENTAGE_ACCESS_TO_COUNSELING.getPosition()].replace("\"", "").equals("Yes");
             if (hasAccessToCounseling) {
                 accessToCounseling++;
             }
             iterableSize++;
         }
         assert iterableSize != 0 : "Iterable size was 0";
-        final double percentageAccessToCounseling = (accessToCounseling * 100.0) / iterableSize;
+        double percentageAccessToCounseling = (accessToCounseling * 100.0) / iterableSize;
         multipleOutputs.write("percentageAccessToCounseling", key, new DoubleWritable(percentageAccessToCounseling));
     }
 }

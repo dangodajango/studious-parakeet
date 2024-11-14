@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -27,29 +28,29 @@ public class ProcessedDataReader {
 
     public ProcessedDataReader(@Value("${hdfs.file-system.path}") String hdfsFileSystemPath,
                                @Value("${hdfs.output-directory.path}") String outputDirectoryPath) throws IOException {
-        final Configuration configuration = new Configuration();
+        Configuration configuration = new Configuration();
         fileSystem = FileSystem.get(URI.create(hdfsFileSystemPath), configuration);
         this.outputDirectoryPath = new Path(outputDirectoryPath);
     }
 
-    public List<FilteredEntry> readFilteredResults(final String jobId, final int startLine, final int endLine) throws IOException {
-        final Path outputDirectoryForJob = new Path(outputDirectoryPath, jobId);
+    public List<FilteredEntry> readResultsFromFiltering(String jobId, int startLine, int endLine) throws IOException {
+        Path outputDirectoryForJob = new Path(outputDirectoryPath, jobId);
         if (!fileSystem.exists(outputDirectoryForJob)) {
             return Collections.emptyList();
         }
 
-        final Path filteredResultsPath = new Path(outputDirectoryForJob, "filtered.txt");
-        if (!fileSystem.exists(filteredResultsPath) || isFileEmpty(filteredResultsPath)) {
+        Path fileContainingFilteredResults = new Path(outputDirectoryForJob, "filtered.txt");
+        if (!fileSystem.exists(fileContainingFilteredResults) || isFileEmpty(fileContainingFilteredResults)) {
             return Collections.emptyList();
         }
 
-        return readFilteredResults(filteredResultsPath, startLine, endLine);
+        return readResultsFromFiltering(fileContainingFilteredResults, startLine, endLine);
     }
 
-    private List<FilteredEntry> readFilteredResults(final Path filePath, final int startLine, final int endLine) throws IOException {
-        final FSDataInputStream inputStream = fileSystem.open(filePath);
-        try (final BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
-            final List<FilteredEntry> filteredEntries = new ArrayList<>();
+    private List<FilteredEntry> readResultsFromFiltering(Path filePath, int startLine, int endLine) throws IOException {
+        FSDataInputStream inputStream = fileSystem.open(filePath);
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
+            List<FilteredEntry> filteredEntries = new ArrayList<>();
             int currentLine = 1;
             String filteredEntry;
             while ((filteredEntry = reader.readLine()) != null) {
@@ -65,34 +66,41 @@ public class ProcessedDataReader {
         }
     }
 
-    public List<AggregatedEntry> readAggregatedResults(final String jobId) throws IOException {
-        final Path outputDirectoryForJob = new Path(outputDirectoryPath, jobId);
+    public List<List<AggregatedEntry>> readResultsFromAggregations(String jobId) throws IOException {
+        Path outputDirectoryForJob = new Path(outputDirectoryPath, jobId);
         if (!fileSystem.exists(outputDirectoryForJob)) {
             return Collections.emptyList();
         }
-
-        final Path aggregatedResultsPath = new Path(outputDirectoryForJob, "aggregated.txt");
-        if (!fileSystem.exists(aggregatedResultsPath) || isFileEmpty(aggregatedResultsPath)) {
-            return Collections.emptyList();
-        }
-
-        return readAggregatedResults(aggregatedResultsPath);
+        return readResultsFromAggregations(outputDirectoryForJob);
     }
 
-    private List<AggregatedEntry> readAggregatedResults(final Path filePath) throws IOException {
-        final FSDataInputStream inputStream = fileSystem.open(filePath);
-        try (final BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
-            final List<AggregatedEntry> aggregatedEntries = new ArrayList<>();
-            String aggregatedEntry;
-            while ((aggregatedEntry = reader.readLine()) != null) {
-                aggregatedEntries.add(AggregatedEntry.mapToAggregatedEntry(aggregatedEntry));
+    private List<List<AggregatedEntry>> readResultsFromAggregations(Path outputDirectoryPath) throws IOException {
+        List<List<AggregatedEntry>> resultsFromAllAggregations = new ArrayList<>();
+        FileStatus[] fileStatuses = fileSystem.listStatus(outputDirectoryPath);
+        for (FileStatus fileStatus : fileStatuses) {
+            if (!fileStatus.isFile() || !isAggregationFile(fileStatus)) {
+                continue;
             }
-            return aggregatedEntries;
+            FSDataInputStream inputStream = fileSystem.open(fileStatus.getPath());
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
+                List<AggregatedEntry> singleAggregationResults = new ArrayList<>();
+                String aggregatedEntry;
+                while ((aggregatedEntry = reader.readLine()) != null) {
+                    singleAggregationResults.add(AggregatedEntry.mapToAggregatedEntry(aggregatedEntry));
+                }
+                resultsFromAllAggregations.add(singleAggregationResults);
+            }
         }
+        return resultsFromAllAggregations;
     }
 
-    private boolean isFileEmpty(final Path path) throws IOException {
-        final FileStatus fileStatus = fileSystem.getFileStatus(path);
+    private boolean isFileEmpty(Path path) throws IOException {
+        FileStatus fileStatus = fileSystem.getFileStatus(path);
         return fileStatus.getLen() == 0;
+    }
+
+    private boolean isAggregationFile(FileStatus fileStatus) {
+        List<String> validFileNames = Arrays.asList("averageSmokingPrevalence.txt", "percentageAccessToCounseling.txt");
+        return validFileNames.contains(fileStatus.getPath().getName());
     }
 }

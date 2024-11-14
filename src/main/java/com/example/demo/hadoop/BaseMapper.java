@@ -50,7 +50,7 @@ public class BaseMapper extends Mapper<Object, Text, Text, Text> {
             if (!isMatching) {
                 return;
             }
-            reducerKey.append(filter.extractValue(deconstructedValue)).append(" | ");
+            reducerKey.append(filter.extractValue(deconstructedValue)).append(",");
         }
         context.write(new Text(reducerKey.toString()), value);
         multipleOutputs.write(context.getJobName(), null, value);

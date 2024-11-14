@@ -11,7 +11,7 @@ import java.util.List;
 @Getter
 public class Response {
 
-    private final List<FilteredEntry> filteredEntries;
+    private final List<FilteredEntry> resultsFromFiltering;
 
-    private final List<AggregatedEntry> aggregatedEntries;
+    private final List<List<AggregatedEntry>> resultsFromAggregations;
 }

@@ -14,10 +14,10 @@ import java.io.IOException;
 public class RawDataOutputFormat<K, V> extends TextOutputFormat<K, V> {
 
     @Override
-    public RecordWriter<K, V> getRecordWriter(final TaskAttemptContext job) throws IOException {
-        final Path file = getDefaultWorkFile(job, ".txt");
-        final FileSystem fs = file.getFileSystem(job.getConfiguration());
-        final FSDataOutputStream fsDataOutputStream = fs.create(file, false);
+    public RecordWriter<K, V> getRecordWriter(TaskAttemptContext job) throws IOException {
+        Path file = getDefaultWorkFile(job, ".txt");
+        FileSystem fs = file.getFileSystem(job.getConfiguration());
+        FSDataOutputStream fsDataOutputStream = fs.create(file, false);
         return new RawDataWriter<>(fsDataOutputStream);
     }
 
@@ -27,12 +27,12 @@ public class RawDataOutputFormat<K, V> extends TextOutputFormat<K, V> {
         private final DataOutputStream dataOutputStream;
 
         @Override
-        public void write(final K key, final V value) throws IOException {
+        public void write(K key, V value) throws IOException {
             dataOutputStream.writeBytes(value.toString() + "\n");
         }
 
         @Override
-        public void close(final TaskAttemptContext context) throws IOException {
+        public void close(TaskAttemptContext context) throws IOException {
             dataOutputStream.close();
         }
     }

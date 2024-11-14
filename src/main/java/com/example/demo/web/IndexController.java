@@ -28,8 +28,8 @@ public class IndexController {
 
         Response response = indexService.processRequest(Arrays.asList(genderFilterDTO, peerInfluenceDTO, ageGroupDTO), lineNumber);
 
-        model.addAttribute("filteredEntries", response.getFilteredEntries());
-        model.addAttribute("aggregatedEntries", response.getAggregatedEntries());
+        model.addAttribute("filteredEntries", response.getResultsFromFiltering());
+        model.addAttribute("resultsFromAggregations", response.getResultsFromAggregations());
         model.addAttribute("lineNumber", lineNumber);
         model.addAttribute("pageSize", indexService.getPageSize());
 
