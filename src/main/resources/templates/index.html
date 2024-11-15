@@ -147,17 +147,13 @@
 
 
 <div class="aggregation-container">
-    <table class="aggregation-table" th:each="singleAggregationResults : ${resultsFromAggregations}">
-        <thead>
-        <tr>
-            <th>Aggregation</th>
-            <th>Result</th>
-        </tr>
-        </thead>
+
+    <table class="aggregation-table" th:each="singleAggregationResult : ${resultsFromAggregations}">
+        <h3 th:text="${singleAggregationResult.aggregationName}"></h3>
         <tbody>
-        <tr th:each="aggregationResult : ${singleAggregationResults}">
-            <td th:text="${aggregationResult.aggregation}"></td>
-            <td th:text="${aggregationResult.result}"></td>
+        <tr th:each="aggregationEntry : ${singleAggregationResult.aggregatedEntries}">
+            <td th:each="appliedFilter : ${aggregationEntry.appliedFilters}" th:text="${appliedFilter}"></td>
+            <td th:text="${aggregationEntry.result}"></td>
         </tr>
         </tbody>
     </table>

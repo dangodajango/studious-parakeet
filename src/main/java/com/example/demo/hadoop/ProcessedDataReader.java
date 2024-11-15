@@ -2,6 +2,7 @@ package com.example.demo.hadoop;
 
 import com.example.demo.hadoop.model.AggregatedEntry;
 import com.example.demo.hadoop.model.FilteredEntry;
+import com.example.demo.hadoop.model.SingleAggregationResult;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.FileStatus;
@@ -66,7 +67,7 @@ public class ProcessedDataReader {
         }
     }
 
-    public List<List<AggregatedEntry>> readResultsFromAggregations(String jobId) throws IOException {
+    public List<SingleAggregationResult> readResultsFromAggregations(String jobId) throws IOException {
         Path outputDirectoryForJob = new Path(outputDirectoryPath, jobId);
         if (!fileSystem.exists(outputDirectoryForJob)) {
             return Collections.emptyList();
@@ -74,8 +75,8 @@ public class ProcessedDataReader {
         return readResultsFromAggregations(outputDirectoryForJob);
     }
 
-    private List<List<AggregatedEntry>> readResultsFromAggregations(Path outputDirectoryPath) throws IOException {
-        List<List<AggregatedEntry>> resultsFromAllAggregations = new ArrayList<>();
+    private List<SingleAggregationResult> readResultsFromAggregations(Path outputDirectoryPath) throws IOException {
+        List<SingleAggregationResult> resultsFromAllAggregations = new ArrayList<>();
         FileStatus[] fileStatuses = fileSystem.listStatus(outputDirectoryPath);
         for (FileStatus fileStatus : fileStatuses) {
             if (!fileStatus.isFile() || !isAggregationFile(fileStatus)) {
@@ -88,7 +89,7 @@ public class ProcessedDataReader {
                 while ((aggregatedEntry = reader.readLine()) != null) {
                     singleAggregationResults.add(AggregatedEntry.mapToAggregatedEntry(aggregatedEntry));
                 }
-                resultsFromAllAggregations.add(singleAggregationResults);
+                resultsFromAllAggregations.add(new SingleAggregationResult(fileStatus.getPath().getName(), singleAggregationResults));
             }
         }
         return resultsFromAllAggregations;

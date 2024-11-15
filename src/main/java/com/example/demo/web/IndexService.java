@@ -3,8 +3,8 @@ package com.example.demo.web;
 import com.example.demo.hadoop.BaseJob;
 import com.example.demo.hadoop.ProcessedDataReader;
 import com.example.demo.hadoop.filter.FilterDTO;
-import com.example.demo.hadoop.model.AggregatedEntry;
 import com.example.demo.hadoop.model.FilteredEntry;
+import com.example.demo.hadoop.model.SingleAggregationResult;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.hadoop.fs.Path;
@@ -35,7 +35,7 @@ public class IndexService {
     public Response processRequest(List<FilterDTO> filterDTOs, int lineNumber) throws IOException, InterruptedException, ClassNotFoundException {
         String jobId = dataProcessingJob.executeJob(filterDTOs, new Path(inputDirectoryPath), new Path(outputDirectoryPath));
         List<FilteredEntry> resultsFromFiltering = processedDataReader.readResultsFromFiltering(jobId, lineNumber, lineNumber + 30);
-        List<List<AggregatedEntry>> resultsFromAggregations = processedDataReader.readResultsFromAggregations(jobId);
+        List<SingleAggregationResult> resultsFromAggregations = processedDataReader.readResultsFromAggregations(jobId);
         return new Response(resultsFromFiltering, resultsFromAggregations);
     }
 }

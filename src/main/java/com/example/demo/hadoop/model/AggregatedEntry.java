@@ -7,12 +7,13 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public class AggregatedEntry {
 
-    private final String aggregation;
+    private final String[] appliedFilters;
 
     private final String result;
 
     public static AggregatedEntry mapToAggregatedEntry(String aggregatedEntryString) {
         String[] entryColumns = aggregatedEntryString.split("\t");
-        return new AggregatedEntry(entryColumns[0], entryColumns[1]);
+        String[] appliedFilters = entryColumns[0].split(",");
+        return new AggregatedEntry(appliedFilters, entryColumns[1]);
     }
 }
