@@ -1,4 +1,4 @@
-package com.example.demo.hadoop.model;
+package com.example.demo.hadoop;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

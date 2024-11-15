@@ -1,15 +1,13 @@
-package com.example.demo.hadoop.model;
+package com.example.demo.hadoop.hdfs.filter;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.ToString;
 
 @Getter
 @Builder
 @AllArgsConstructor
-@ToString
-public class FilteredEntry {
+public class FilterFileRow {
     private int year;
     private String ageGroup;
     private String gender;
@@ -26,9 +24,9 @@ public class FilteredEntry {
     private int communitySupport;
     private int mediaInfluence;
 
-    public static FilteredEntry mapToFilteredEntry(String filteredEntryString) {
+    public static FilterFileRow mapToFileRow(String filteredEntryString) {
         String[] entryColumns = filteredEntryString.replace("\"", "").split(",");
-        return new FilteredEntryBuilder()
+        return new FilterFileRow.FilterFileRowBuilder()
                 .year(Integer.parseInt(entryColumns[0]))
                 .ageGroup(entryColumns[1])
                 .gender(entryColumns[2])

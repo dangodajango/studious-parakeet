@@ -118,7 +118,7 @@
     </tr>
     </thead>
     <tbody>
-    <tr th:each="entry : ${filteredEntries}">
+    <tr th:each="entry : ${resultsFromFiltering.rows}">
         <td th:text="${entry.year}"></td>
         <td th:text="${entry.ageGroup}"></td>
         <td th:text="${entry.gender}"></td>
@@ -147,16 +147,17 @@
 
 
 <div class="aggregation-container">
-
-    <table class="aggregation-table" th:each="singleAggregationResult : ${resultsFromAggregations}">
-        <h3 th:text="${singleAggregationResult.aggregationName}"></h3>
-        <tbody>
-        <tr th:each="aggregationEntry : ${singleAggregationResult.aggregatedEntries}">
-            <td th:each="appliedFilter : ${aggregationEntry.appliedFilters}" th:text="${appliedFilter}"></td>
-            <td th:text="${aggregationEntry.result}"></td>
-        </tr>
-        </tbody>
-    </table>
+    <div th:each="aggregationFileContent : ${resultsFromAggregations}">
+        <h3 th:text="${aggregationFileContent.fileName}"></h3>
+        <table class="aggregation-table">
+            <tbody>
+            <tr th:each="row : ${aggregationFileContent.rows}">
+                <td th:each="column : ${row.columns}" th:text="${column}"></td>
+                <td th:text="${row.value}"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
 </div>
 
 <script>

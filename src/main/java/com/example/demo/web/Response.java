@@ -1,7 +1,7 @@
 package com.example.demo.web;
 
-import com.example.demo.hadoop.model.FilteredEntry;
-import com.example.demo.hadoop.model.SingleAggregationResult;
+import com.example.demo.hadoop.hdfs.aggregation.AggregationFileContent;
+import com.example.demo.hadoop.hdfs.filter.FilterFileContent;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -11,7 +11,7 @@ import java.util.List;
 @Getter
 public class Response {
 
-    private final List<FilteredEntry> resultsFromFiltering;
+    private final FilterFileContent resultsFromFiltering;
 
-    private final List<SingleAggregationResult> resultsFromAggregations;
+    private final List<AggregationFileContent> resultsFromAggregations;
 }

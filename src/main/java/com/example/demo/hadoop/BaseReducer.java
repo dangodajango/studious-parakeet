@@ -10,8 +10,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.example.demo.hadoop.model.Aggregator.AVERAGE_SMOKING_PREVALENCE;
-import static com.example.demo.hadoop.model.Aggregator.PERCENTAGE_ACCESS_TO_COUNSELING;
+import static com.example.demo.hadoop.Aggregator.AVERAGE_SMOKING_PREVALENCE;
+import static com.example.demo.hadoop.Aggregator.PERCENTAGE_ACCESS_TO_COUNSELING;
 
 @Slf4j
 public class BaseReducer extends Reducer<Text, Text, Text, DoubleWritable> {

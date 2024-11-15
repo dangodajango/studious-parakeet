@@ -13,6 +13,7 @@ import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.mapreduce.lib.output.MultipleOutputs;
 import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -23,6 +24,15 @@ import java.util.UUID;
 public class BaseJob {
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
+
+    @Value("${hdfs.filter.file-name}")
+    private String filterFileName;
+
+    @Value("${hdfs.aggregation.file-name.average-smoking-prevalence}")
+    private String averageSmokingPrevalenceFileName;
+
+    @Value("${hdfs.aggregation.file-name.percentage-access-to-counseling}")
+    private String percentageAccessToCounselingFileName;
 
     public String executeJob(List<FilterDTO> filterDTOs, Path inputDirectory, Path outputDirectory)
             throws IOException, InterruptedException, ClassNotFoundException {
@@ -55,24 +65,24 @@ public class BaseJob {
         return jobId;
     }
 
-    private static void renameGeneratedFiles(Path outputDirectory, Job job, Configuration configuration) throws IOException {
+    private void renameGeneratedFiles(Path outputDirectory, Job job, Configuration configuration) throws IOException {
         final FileSystem fileSystem = FileSystem.get(configuration);
 
         final Path filteredResults = new Path(outputDirectory, String.format("%s-m-00000.txt", job.getJobName()));
         if (fileSystem.exists(filteredResults)) {
-            final Path renamedFilteredResultsFile = new Path(outputDirectory, "filtered.txt");
+            final Path renamedFilteredResultsFile = new Path(outputDirectory, filterFileName);
             fileSystem.rename(filteredResults, renamedFilteredResultsFile);
         }
 
         final Path averageSmokingPrevalenceResults = new Path(outputDirectory, "averageSmokingPrevalence-r-00000");
         if (fileSystem.exists(averageSmokingPrevalenceResults)) {
-            final Path renamedAverageSmokingPrevalenceResults = new Path(outputDirectory, "averageSmokingPrevalence.txt");
+            final Path renamedAverageSmokingPrevalenceResults = new Path(outputDirectory, averageSmokingPrevalenceFileName);
             fileSystem.rename(averageSmokingPrevalenceResults, renamedAverageSmokingPrevalenceResults);
         }
 
         final Path percentageAccessToCounselingResults = new Path(outputDirectory, "percentageAccessToCounseling-r-00000");
         if (fileSystem.exists(percentageAccessToCounselingResults)) {
-            final Path renamedPercentageAccessToCounselingResults = new Path(outputDirectory, "percentageAccessToCounseling.txt");
+            final Path renamedPercentageAccessToCounselingResults = new Path(outputDirectory, percentageAccessToCounselingFileName);
             fileSystem.rename(percentageAccessToCounselingResults, renamedPercentageAccessToCounselingResults);
         }
     }
