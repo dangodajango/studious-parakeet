@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
@@ -20,11 +21,15 @@ public class IndexController {
     private final IndexService indexService;
 
     @GetMapping("/")
-    public String index(@RequestParam(defaultValue = "1") int lineNumber, Model model)
+    public String index(@RequestParam(defaultValue = "1") int lineNumber,
+                        @RequestParam(defaultValue = "Both, Male, Female") List<String> genders,
+                        @RequestParam(defaultValue = "1,2,3,4,5,6,7,8,9,10") List<String> peerInfluence,
+                        @RequestParam(defaultValue = "1, 100") List<String> ageGroup,
+                        Model model)
             throws IOException, InterruptedException, ClassNotFoundException {
-        FilterDTO genderFilterDTO = new FilterDTO(GenderFilter.FILTER_NAME, Arrays.asList("Both", "Male"));
-        FilterDTO peerInfluenceDTO = new FilterDTO(PeerInfluenceFilter.FILTER_NAME, Arrays.asList("1", "2", "3", "4", "5"));
-        FilterDTO ageGroupDTO = new FilterDTO(AgeGroupFilter.FILTER_NAME, Arrays.asList("1", "50"));
+        FilterDTO genderFilterDTO = new FilterDTO(GenderFilter.FILTER_NAME, genders);
+        FilterDTO peerInfluenceDTO = new FilterDTO(PeerInfluenceFilter.FILTER_NAME, peerInfluence);
+        FilterDTO ageGroupDTO = new FilterDTO(AgeGroupFilter.FILTER_NAME, ageGroup);
 
         Response response = indexService.processRequest(Arrays.asList(genderFilterDTO, peerInfluenceDTO, ageGroupDTO), lineNumber);
 
